@@ -1,12 +1,15 @@
 const express = require('express')
 const fs = require('fs');
 const path = require('path');
+var cors = require('cors')
 const { json } = require('stream/consumers');
 const app = express()
 
 // Middleware-ek
+app.use(cors())
 app.use(express.json()) //json formátum megkövetelése
 app.use(express.urlencoded({extended: true})); //req body-n keresztül átmenjenek az adatok
+
 
 let users = []
 const USERS_FILE = path.join(__dirname, 'user.json')
@@ -20,13 +23,13 @@ app.get('/', (req, res) => {
 
 // GET all users
 
-app.get('/user', (req, res)=>{
+app.get('/users', (req, res)=>{
     res.send(users)
 });
 
 // GET one user by id
 
-app.get('/user/:id',(req,res)=>{
+app.get('/users/:id',(req,res)=>{
     let id = req.params.id
     let idx = users.findIndex(user => user.id == id)
     if(idx >-1){
@@ -38,7 +41,7 @@ app.get('/user/:id',(req,res)=>{
 
 
 // POST new user
-app.post('/user', (req,res)=>{
+app.post('/users', (req,res)=>{
  let data = req.body;
  data.id = getNextId();
  users.push(data)
@@ -47,7 +50,7 @@ app.post('/user', (req,res)=>{
 });
 
 // DELETE user
-app.delete('/user/:id', (req,res)=>{
+app.delete('/users/:id', (req,res)=>{
     let id = req.params.id
     let idx = users.findIndex(user => user.id == id)
     if(idx >-1){
@@ -60,7 +63,7 @@ app.delete('/user/:id', (req,res)=>{
 
 // UPDATE user by id
 
-app.patch('/user/:id', (req,res)=>{
+app.patch('/users/:id', (req,res)=>{
     let id = req.params.id
     let data = req.body
     let idx = users.findIndex(user => user.id == id)

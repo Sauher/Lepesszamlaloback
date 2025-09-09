@@ -5,33 +5,33 @@ Content-Type: application/json
 
 ### GET users
 
-GET http://localhost:3000/user
+GET http://localhost:3000/users
 Content-Type: application/json
 
 ### GET one user
 
-GET http://localhost:3000/user/1
+GET http://localhost:3000/users/1
 Content-Type: application/json
 
 ### POST User
 
-POST http://localhost:3000/user
+POST http://localhost:3000/users
 Content-Type: application/json
 
 {
     "id": 0,
-    "name": "Termesz2",
-    "email": "termeszvok2@gmail.com",
-    "password": "termike1234."
+    "name": "Termesz3",
+    "email": "termeszvok232@gmail.com",
+    "password": "termike1232434."
 }
 
 ### DELETE user
 
-DELETE http://localhost:3000/user/4
+DELETE http://localhost:3000/users/4
 Content-Type: application/json
 
 ### PATCH user by id
-PATCH http://localhost:3000/user/1
+PATCH http://localhost:3000/users/1
 Content-Type: application/json
 
 {
