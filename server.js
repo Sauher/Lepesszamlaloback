@@ -44,7 +44,7 @@ app.get('/users/:id',(req,res)=>{
 app.post('/users', (req,res)=>{
  let data = req.body;
  if(isEmailExist(data.email)){
-    return res.status(400).send({msg: "Ez az email cím már regisztrált!"})
+    return res.status(400).send({msg:"bademail"})
  }
  data.id = getNextId();
  users.push(data)
