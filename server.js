@@ -18,7 +18,7 @@ loadUsers()
 // ENDPOINTS
 
 app.get('/', (req, res) => {
-  res.send('Backend API by Bajai SZC Türr István Technikum - 13.A Szoftverfejlesztő ')
+  res.send({msg:'Backend API by Bajai SZC Türr István Technikum - 13.A Szoftverfejlesztő '})
 })
 
 // GET all users
@@ -35,7 +35,7 @@ app.get('/users/:id',(req,res)=>{
     if(idx >-1){
         return res.send(users[idx])
     }
-    return res.send("Nincs ilyen azonosítójú felhasználó!")
+    return res.status(400).send({msg:"Nincs ilyen azonosítójú felhasználó!"})
     
 })
 
@@ -43,9 +43,12 @@ app.get('/users/:id',(req,res)=>{
 // POST new user
 app.post('/users', (req,res)=>{
  let data = req.body;
+ if(isEmailExist(data.email)){
+    return res.status(400).send({msg: "Ez az email cím már regisztrált!"})
+ }
  data.id = getNextId();
  users.push(data)
- res.send('Termeszek')
+ res.send({msg: "Sikeres regisztráció!"})
  saveUsers()
 });
 
@@ -55,9 +58,9 @@ app.delete('/users/:id', (req,res)=>{
     let idx = users.findIndex(user => user.id == id)
     if(idx >-1){
         users.splice(idx,1)
-        return res.send("A felhasználó törölve.")
+        return res.send({msg:"A felhasználó törölve."})
     }
-    return res.send("Nincs ilyen azonosítójú felhasználó!")
+    return res.status(400).send({msg:"Nincs ilyen azonosítójú felhasználó!"})
     saveUsers()
 });
 
@@ -70,9 +73,9 @@ app.patch('/users/:id', (req,res)=>{
     if(idx >-1){
         users[idx] = data
         users[idx].id = Number(id)
-        return res.send("A felhasználó módosítva.")
+        return res.send({msg:"A felhasználó módosítva."})
     }
-    return res.send("Nincs ilyen azonosítójú felhasználó!")
+    return res.status(400).send({msg:"Nincs ilyen azonosítójú felhasználó!"})
     saveUsers()
 })
 
@@ -115,4 +118,14 @@ function loadUsers(){
 
 function saveUsers(){
     fs.writeFileSync(USERS_FILE,JSON.stringify(users))
+}
+function isEmailExist(email){
+    let exists = false
+    users.forEach(user=> {
+        if(user.email == email){
+            exists = true
+            return
+        }
+    })
+    return exists
 }
