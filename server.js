@@ -30,13 +30,12 @@ app.get('/users', (req, res)=>{
 // GET one user by id
 
 app.get('/users/:id',(req,res)=>{
-    let id = req.params.id
-    let idx = users.findIndex(user => user.id == id)
+    let id = Number(req.params.id)
+    let idx = users.findIndex(user => Number(user.id) === id)
     if(idx >-1){
         return res.send(users[idx])
     }
     return res.status(400).send({msg:"Nincs ilyen azonosítójú felhasználó!"})
-    
 })
 
 
@@ -68,29 +67,54 @@ app.post('/users/login', (req, res) => {
 })
 // DELETE user
 app.delete('/users/:id', (req,res)=>{
-    let id = req.params.id
-    let idx = users.findIndex(user => user.id == id)
+    let id = Number(req.params.id)
+    let idx = users.findIndex(user => Number(user.id) === id)
     if(idx >-1){
         users.splice(idx,1)
+        saveUsers()
         return res.send({msg:"A felhasználó törölve."})
     }
     return res.status(400).send({msg:"Nincs ilyen azonosítójú felhasználó!"})
-    saveUsers()
-});
+})
 
 // UPDATE user by id
 
-app.patch('/users/:id', (req,res)=>{
-    let id = req.params.id
+app.patch('/users/:id', (req, res) => {
+    let id = Number(req.params.id)
     let data = req.body
-    let idx = users.findIndex(user => user.id == id)
-    if(idx >-1){
-        users[idx] = data
-        users[idx].id = Number(id)
-        return res.send({msg:"A felhasználó módosítva."})
+    let idx = users.findIndex(user => Number(user.id) === id)
+    if (idx > -1) {
+        if (data.email && data.email != users[idx].email) {
+            let exists = users.some(user => user.email === data.email && Number(user.id) !== id)
+            if (exists) {
+                return res.status(400).send({ msg: "Ez az email cím már foglalt!" })
+            }
+            users[idx].email = data.email
+        }
+        if (data.name) users[idx].name = data.name
+        saveUsers()
+        return res.send({ msg: "A felhasználó módosítva.", user: users[idx] })
     }
-    return res.status(400).send({msg:"Nincs ilyen azonosítójú felhasználó!"})
-    saveUsers()
+    return res.status(400).send({ msg: "Nincs ilyen azonosítójú felhasználó!" })
+})
+
+//UPDATE password
+app.patch('/users/changepass/:id', (req, res) => {
+    let id = Number(req.params.id)
+    let data = req.body
+    let idx = users.findIndex(user => Number(user.id) === id)
+    if (idx > -1) {
+        if (data.oldpass && data.newpass) {
+            if (data.oldpass != users[idx].password) {
+                return res.status(400).send({ msg: "A régi jelszó nem megfelelő!" })
+            }
+            users[idx].password = data.newpass
+            saveUsers()
+            return res.send({ msg: "A jelszó módosítva.",user : users[idx] })
+        }
+        return res.status(400).send({ msg: "Nincsenek meg a szükséges adatok!" })
+    }
+    return res.status(400).send({ msg: "Nincs ilyen azonosítójú felhasználó!" })
 })
 
 app.listen(3000)
@@ -142,7 +166,4 @@ function isEmailExist(email){
         }
     })
     return exists
-}
-function userLogin(){
-
 }
