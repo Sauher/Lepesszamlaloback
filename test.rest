@@ -20,9 +20,9 @@ Content-Type: application/json
 
 {
     "id": 0,
-    "name": "Termesz3",
-    "email": "termeszvok232@gmail.com",
-    "password": "termike1232434."
+    "name": "Tesztfiok",
+    "email": "a@a.com",
+    "password": "ASDasd123"
 }
 
 ### DELETE user
@@ -48,4 +48,40 @@ Content-Type: application/json
 {
     "email": "a@aa.com",
     "password": "ASDasd123"
+}
+### POST steps
+POST http://localhost:3000/steps
+Content-Type: application/json
+
+{
+    "id": 0,
+    "uid": 1,
+    "stepcount": 22100,
+    "date": "2001-09-15"
+}
+### GET all steps
+GET http://localhost:3000/steps
+Content-Type: application/json
+
+### GET steps by id
+GET http://localhost:3000/steps/user/4
+Content-Type: application/json
+
+### DELETE steps by userid
+DELETE http://localhost:3000/steps/user/2
+Content-Type: application/json
+
+### DELETE all stepdata
+DELETE http://localhost:3000/steps
+Content-Type: application/json
+
+### UPDATE stepdata by id
+PATCH http://localhost:3000/steps/2
+Content-Type: application/json
+
+{
+    "id":2,
+    "uid":1,
+    "stepcount":4000,
+    "date":"2001-09-14"
 }

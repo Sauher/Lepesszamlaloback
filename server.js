@@ -12,14 +12,19 @@ app.use(express.urlencoded({extended: true})); //req body-n keresztül átmenjen
 
 
 let users = []
+let stepdata = []
 const USERS_FILE = path.join(__dirname, 'user.json')
+const STEPS_FILE = path.join(__dirname, 'steps.json')
 
 loadUsers()
+loadStepdata()
 // ENDPOINTS
 
 app.get('/', (req, res) => {
   res.send({msg:'Backend API by Bajai SZC Türr István Technikum - 13.A Szoftverfejlesztő '})
 })
+
+// --------------------------USERS----------------------------
 
 // GET all users
 
@@ -117,8 +122,117 @@ app.patch('/users/changepass/:id', (req, res) => {
     return res.status(400).send({ msg: "Nincs ilyen azonosítójú felhasználó!" })
 })
 
-app.listen(3000)
 
+// --------------------------STEPS----------------------------
+
+// GET all steps of all users
+app.get('/steps',(req,res) => {
+    res.send(stepdata)
+})
+
+
+// GET all steps by userID
+
+app.get('/steps/user/:uid',(req,res) => {
+    let usersteps = []
+    let uid = Number(req.params.uid)
+    for (let i = 0; i < stepdata.length; i++) {
+        if(stepdata[i].uid == uid){
+            usersteps.push(stepdata[i])
+        }
+        
+    }
+    res.send(usersteps)
+})
+
+// GET one step by id
+
+app.get('/steps/:id', (req,res) =>{
+    let id = Number(req.params.id)
+    let idx = stepdata.findIndex(step => Number(step.id) === id)
+    if(idx >-1){
+        return res.send(stepdata[idx])
+    }
+    return res.status(400).send({msg:"Nincs ilyen azonosítójú léps!"})
+})
+
+//POST new stepdata
+app.post('/steps',(req,res) =>{
+    let data = req.body;
+    data.id = getNextStepId();
+    stepdata.push(data)
+    res.send({msg: "Sikeres adatfelvitel!"})
+    saveStepdata()
+});
+
+
+
+//PATCH stepdata by id
+app.patch('/steps/:id',(req,res) => {
+    let id = Number(req.params.id)
+    let data = req.body
+    let idx = stepdata.findIndex(step => Number(step.id) === id)
+    if (idx > -1) {
+        if (data.date) stepdata[idx].date = data.date
+        if (data.stepcount) stepdata[idx].stepcount = data.stepcount
+        saveStepdata()
+        return res.send({ msg: "A lépésszám módosítva.", step: stepdata[idx] })
+    }
+    return res.status(400).send({ msg: "Nincs ilyen azonosítójú lépésadat" })
+})
+
+
+// DELETE stepdata
+
+app.delete('/steps/:id',(req,res) =>{
+    let id = Number(req.params.id)
+    let idx = stepdata.findIndex(step => Number(step.id) === id)
+    stepdata.splice(idx,1)
+    saveStepdata()
+    res.send("Sikeres törlés!")
+})
+
+// DELETE all steps by userID
+app.delete('/steps/user/:uid', (req,res) =>{
+    let uid = Number(req.params.uid)
+    for (let i = 0; i < stepdata.length; i++) {
+        if(stepdata[i].uid == uid){
+            stepdata.splice(i,1)
+            i--
+        }
+        
+    }
+    saveStepdata()
+    res.send("Sikeresen törölve!")
+})
+
+// DELETE all steps by users
+app.delete('/steps',(req,res) =>{
+    stepdata = []
+    saveStepdata()
+    res.send("Összes adat törölve")
+})
+
+
+
+
+app.listen(3000)
+function getNextStepId(){
+    let nextID = 1;
+
+    if (stepdata.length == 0){
+        return nextID
+    }
+    
+    let maxIndex = 0
+    for (let i = 0; i < stepdata.length; i++) {
+        if(stepdata[i].id > stepdata[maxIndex].id){
+            maxIndex = i
+        }
+        
+    }
+    return stepdata[maxIndex].id + 1
+}
 function getNextId(){
     let nextID = 1;
 
@@ -166,4 +280,23 @@ function isEmailExist(email){
         }
     })
     return exists
+}
+function saveStepdata(){
+    fs.writeFileSync(STEPS_FILE,JSON.stringify(stepdata))
+}
+function loadStepdata(){
+    if(fs.existsSync(STEPS_FILE)){
+        const raw = fs.readFileSync(STEPS_FILE)
+        try{
+            stepdata = JSON.parse(raw)
+        }
+        catch(err){
+            console.log("Hiba az adatok beolvasása közben!", err)
+            stepdata = [];
+
+        }
+    }
+    else{
+        saveStepdata()
+    }
 }
