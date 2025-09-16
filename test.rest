@@ -63,8 +63,8 @@ Content-Type: application/json
 GET http://localhost:3000/steps
 Content-Type: application/json
 
-### GET steps by id
-GET http://localhost:3000/steps/user/4
+### GET steps by uid
+GET http://localhost:3000/steps/user/1
 Content-Type: application/json
 
 ### DELETE steps by userid
@@ -85,3 +85,7 @@ Content-Type: application/json
     "stepcount":4000,
     "date":"2001-09-14"
 }
+
+### Get a stepdata by id
+GET http://localhost:3000/steps/1
+Content-Type: application/json

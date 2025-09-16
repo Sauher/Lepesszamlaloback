@@ -136,6 +136,10 @@ app.get('/steps',(req,res) => {
 app.get('/steps/user/:uid',(req,res) => {
     let usersteps = []
     let uid = Number(req.params.uid)
+
+    if(uid == -1){
+        res.status(400).send({msg: "Nincs ilyen felhasználó!"})
+    }
     for (let i = 0; i < stepdata.length; i++) {
         if(stepdata[i].uid == uid){
             usersteps.push(stepdata[i])
@@ -153,7 +157,7 @@ app.get('/steps/:id', (req,res) =>{
     if(idx >-1){
         return res.send(stepdata[idx])
     }
-    return res.status(400).send({msg:"Nincs ilyen azonosítójú léps!"})
+    return res.status(400).send({msg:"Nincs ilyen azonosítójú lépés!"})
 })
 
 //POST new stepdata
@@ -161,8 +165,8 @@ app.post('/steps',(req,res) =>{
     let data = req.body;
     data.id = getNextStepId();
     stepdata.push(data)
-    res.send({msg: "Sikeres adatfelvitel!"})
     saveStepdata()
+    res.send({msg: "Sikeres adatfelvitel!"})
 });
 
 
@@ -189,12 +193,16 @@ app.delete('/steps/:id',(req,res) =>{
     let idx = stepdata.findIndex(step => Number(step.id) === id)
     stepdata.splice(idx,1)
     saveStepdata()
-    res.send("Sikeres törlés!")
+    res.send({msg:"Sikeres törlés!"})
 })
 
 // DELETE all steps by userID
 app.delete('/steps/user/:uid', (req,res) =>{
     let uid = Number(req.params.uid)
+
+    if(uid == -1){
+        res.status(400).send({msg: "Nincs ilyen felhasználó!"})
+    }
     for (let i = 0; i < stepdata.length; i++) {
         if(stepdata[i].uid == uid){
             stepdata.splice(i,1)
@@ -203,14 +211,14 @@ app.delete('/steps/user/:uid', (req,res) =>{
         
     }
     saveStepdata()
-    res.send("Sikeresen törölve!")
+    res.send({msg: "Sikeresen törölve!"})
 })
 
 // DELETE all steps by users
 app.delete('/steps',(req,res) =>{
     stepdata = []
     saveStepdata()
-    res.send("Összes adat törölve")
+    res.send({msg:"Összes adat törölve"})
 })
 
 
