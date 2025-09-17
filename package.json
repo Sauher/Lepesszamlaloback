@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sauher/Lepesbackend.git"
+    "url": "git+https://github.com/Sauher/Lepesbackend2.git"
   },
   "author": "SO",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Sauher/Lepesbackend/issues"
+    "url": "https://github.com/Sauher/Lepesbackend2/issues"
   },
-  "homepage": "https://github.com/Sauher/Lepesbackend#readme",
+  "homepage": "https://github.com/Sauher/Lepesbackend2#readme",
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
